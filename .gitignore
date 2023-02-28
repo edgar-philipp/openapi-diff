@@ -17,7 +17,7 @@
 
 # Package Files #
 *.jar
-!openapi-diff-cli-*.jar
+!**/openapi-diff-cli-*.jar
 *.war
 *.nar
 *.ear
