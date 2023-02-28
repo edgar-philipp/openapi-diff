@@ -32,14 +32,14 @@ jobs:
         
       - name: Identify changed OpenAPI files
         id: list-files
-        run: $GITHUB_ACTION_PATH/list_changed_files.sh
+        run: list_changed_files.sh
         shell: bash
         env:
           PATH_FILTERS: ${{ inputs.path-filters }} 
         
       - name: Transform into GitHub matrix (special JSON format)
         id: transform-to-matrix
-        run: $GITHUB_ACTION_PATH/transform_to_github_matrix.sh
+        run: transform_to_github_matrix.sh
         shell: bash
         env:
           CHANGED_FILES: ${{ steps.list-files.outputs.changed_files }}
@@ -61,7 +61,7 @@ jobs:
           fetch-depth: 2
       - name: Verify Diffs on OpenAPI File
         id: diff-file
-        run: $GITHUB_ACTION_PATH/openapi_diff.sh
+        run: openapi_diff.sh
         shell: bash
         env:
           CHANGED_FILE: ${{ inputs.changed-file }}
