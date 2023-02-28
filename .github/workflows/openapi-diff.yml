@@ -20,34 +20,31 @@ jobs:
     outputs:
       matrix: ${{ steps.transform-to-matrix.outputs.matrix }}
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout Git Repository
+        uses: actions/checkout@v3
         with:
-         fetch-depth: 2
-         
-           # filter M = modified
+          fetch-depth: 2
+        
       - name: Identify changed OpenAPI files
         id: list-files
-        run: |
-          list=$(git diff-tree --diff-filter=M --no-commit-id --name-only \
-                  -r $CURRENT_HASH -- 'openapi/**/*.yml' 'openapi/**/*.yaml')
-          echo "Changed files: $list"
-          changed_files="(${list[*]//$'\n'/ })"
-          echo "changed_files=${changed_files}" >> $GITHUB_OUTPUT
-          
+        run: $GITHUB_ACTION_PATH/list_changed_files.sh
+        shell: bash
+        env:
+          GITHUB_SERVER_URL: ${{ github.server_url }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_REF: ${{ github.ref }}
+          GITHUB_SHA: ${{ github.sha }}
+          GITHUB_WORKSPACE: ${{ github.workspace }}
+          PREVIOUS_HASH: ${{ github.event.before }}
+          CURRENT_HASH: ${{ github.event.after }}
+          PATH_FILTERS: ${{ inputs.path-filters }} 
+        
       - name: Transform into GitHub matrix (special JSON format)
         id: transform-to-matrix
-        run: |
-          changed_files=${{ steps.list-files.outputs.changed_files }}
-          for i in "${!changed_files[@]}"; do
-            changed_files[$i]="{\"file\": \"${changed_files[$i]}\"}"
-          done
-          matrix=$(echo "{}")
-          if [ -n "$changed_files" ]; then
-            json_elements=$(IFS=, ; echo "${changed_files[*]}")
-            matrix=$(echo "{\"include\":[$json_elements]}")
-          fi
-          echo "Matrix: $matrix"
-          echo "matrix=$matrix" >> $GITHUB_OUTPUT
+        run: $GITHUB_ACTION_PATH/transform_to_github_matrix.sh
+        shell: bash
+        env:
+          CHANGED_FILES: ${{ steps.list-files.outputs.changed_files }}
   
   diff-detection:
     needs: changed-files
@@ -60,27 +57,21 @@ jobs:
     env:
       changed_file: ${{ matrix.file }}
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout Git Repository
+        uses: actions/checkout@v3
         with:
-         fetch-depth: 2
+          fetch-depth: 2
+      - name: Verify Diffs on OpenAPI File
+        id: diff-file
+        run: $GITHUB_ACTION_PATH/openapi_diff.sh
+        shell: bash
+        env:
+          GITHUB_SERVER_URL: ${{ github.server_url }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_REF: ${{ github.ref }}
+          GITHUB_SHA: ${{ github.sha }}
+          GITHUB_WORKSPACE: ${{ github.workspace }}
+          PREVIOUS_HASH: ${{ github.event.before }}
+          CURRENT_HASH: ${{ github.event.after }}
+          CHANGED_FILE: ${{ inputs.changed-file }}
     
-      - name: Get current version of file ${{ env.changed_file }}
-        run: | 
-          git show ${CURRENT_HASH}:${changed_file} > ${changed_file}_new.yml
-          echo "Commit ${CURRENT_HASH}:"
-          ls ${changed_file}_new.yml
-          
-      - name: Get previous version of file ${{ env.changed_file }}
-        run: | 
-          git show ${PREVIOUS_HASH}:${changed_file} > ${changed_file}_old.yml
-          echo "Commit ${PREVIOUS_HASH}:"
-          ls ${changed_file}_old.yml
-      - name: Show diff
-        run: |
-          git diff ${PREVIOUS_HASH} ${CURRENT_HASH} -- ${changed_file}
-      - name: Check for breaking changes
-        run: |
-          java -jar openapi-diff-cli-2.1.0.jar ${changed_file}_old.yml ${changed_file}_new.yml --fail-on-incompatible
-          if [ $? -ne 0 ]; then
-            exit 1
-          fi
