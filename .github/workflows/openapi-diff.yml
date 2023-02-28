@@ -2,6 +2,13 @@ name: OpenAPI-Diff
 
 on:
   workflow_call:
+    inputs:
+      path-filters:
+        description: 'JSON array of strings representing path filter expressions, e.g. [\"openapi/**/*.yaml\", \"openapi/**/*.yml\"]'
+        type: string
+        required: true
+        default: > 
+          ["openapi/**/*.yaml", "openapi/**/*.yml"]
 
 env:
   CURRENT_HASH: ${{ github.event.after }}
