@@ -21,6 +21,7 @@ env:
 
 jobs:
   changed-files:
+    name: Detect changed OpenAPI files
     runs-on: ubuntu-latest
     outputs:
       matrix: ${{ steps.transform-to-matrix.outputs.matrix }}
@@ -45,6 +46,7 @@ jobs:
           CHANGED_FILES: ${{ steps.list-files.outputs.changed_files }}
   
   diff-detection:
+    name: Diff on OpenAPI file
     needs: changed-files
     if: ${{ toJson(fromJson(needs.changed-files.outputs.matrix)) != '{}' }}
     runs-on: ubuntu-latest
