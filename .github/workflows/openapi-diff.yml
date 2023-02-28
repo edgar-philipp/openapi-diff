@@ -38,14 +38,14 @@ jobs:
 
       - name: Identify changed OpenAPI files
         id: list-files
-        run: ${GITHUB_WORKSPACE}/workflow-repo/list_changed_files.sh
+        run: ${GITHUB_WORKSPACE}/workflow-repo/scripts/list_changed_files.sh
         shell: bash
         env:
           PATH_FILTERS: ${{ inputs.path-filters }} 
         
       - name: Transform into GitHub matrix (special JSON format)
         id: transform-to-matrix
-        run: ${GITHUB_WORKSPACE}/workflow-repo/transform_to_github_matrix.sh
+        run: ${GITHUB_WORKSPACE}/workflow-repo/scripts/transform_to_github_matrix.sh
         shell: bash
         env:
           CHANGED_FILES: ${{ steps.list-files.outputs.changed_files }}
@@ -72,7 +72,7 @@ jobs:
 
       - name: Verify Diffs on OpenAPI File
         id: diff-file
-        run: ${GITHUB_WORKSPACE}/workflow-repo/openapi_diff.sh
+        run: ${GITHUB_WORKSPACE}/workflow-repo/scripts/openapi_diff.sh
         shell: bash
         env:
           CHANGED_FILE: ${{ matrix.file }}
