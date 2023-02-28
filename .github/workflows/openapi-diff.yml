@@ -65,7 +65,7 @@ jobs:
       fail-fast: false
       matrix: ${{ fromJson(needs.changed-files.outputs.matrix) }}
     env:
-      changed_file: ${{ matrix.file }}
+      CHANGED_FILE: ${{ matrix.file }}
     steps:
       - name: Checkout Git Repository
         uses: actions/checkout@v3
@@ -81,6 +81,4 @@ jobs:
         id: diff-file
         run: ${GITHUB_WORKSPACE}/workflow-repo/openapi_diff.sh
         shell: bash
-        env:
-          CHANGED_FILE: ${{ inputs.changed-file }}
- 
+
