@@ -4,11 +4,10 @@ on:
   workflow_call:
     inputs:
       path-filters:
-        description: 'JSON array of strings representing path filter expressions, e.g. [\"openapi/**/*.yaml\", \"openapi/**/*.yml\"]'
+        description: 'Space-separated list of path filter expressions, e.g. \"openapi/**/*.yaml openapi/**/*.yml\"'
         type: string
         required: true
-        default: > 
-          ["openapi/**/*.yaml", "openapi/**/*.yml"]
+        default: "openapi/**/*.yaml openapi/**/*.yml"
 
 env:
   GITHUB_SERVER_URL: ${{ github.server_url }}
