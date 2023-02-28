@@ -19,9 +19,12 @@ env:
   PREVIOUS_HASH: ${{ github.event.before }}
 
 jobs:
-  checkout-repos:
-    name: Checkout Git Repositories
+    
+  changed-files:
+    name: Detect changed OpenAPI files
     runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.transform-to-matrix.outputs.matrix }}
     steps:
       - name: Checkout Git Repository
         uses: actions/checkout@v3
@@ -32,14 +35,7 @@ jobs:
         with:
           repository: edgar-philipp/openapi-diff
           path: workflow-repo
-    
-  changed-files:
-    name: Detect changed OpenAPI files
-    needs: checkout-repos
-    runs-on: ubuntu-latest
-    outputs:
-      matrix: ${{ steps.transform-to-matrix.outputs.matrix }}
-    steps:
+
       - name: Identify changed OpenAPI files
         id: list-files
         run: ${GITHUB_WORKSPACE}/workflow-repo/list_changed_files.sh
@@ -56,7 +52,7 @@ jobs:
   
   diff-detection:
     name: Diff on OpenAPI file
-    needs: [changed-files, checkout-repos]
+    needs: changed-files
     if: ${{ toJson(fromJson(needs.changed-files.outputs.matrix)) != '{}' }}
     runs-on: ubuntu-latest
       # Matrix will spawn a separate job instance for every changed file
@@ -64,6 +60,16 @@ jobs:
       fail-fast: false
       matrix: ${{ fromJson(needs.changed-files.outputs.matrix) }}
     steps:
+      - name: Checkout Git Repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 2
+      - name: Checkout Reusable Workflow for Scripts
+        uses: actions/checkout@v3
+        with:
+          repository: edgar-philipp/openapi-diff
+          path: workflow-repo
+
       - name: Verify Diffs on OpenAPI File
         id: diff-file
         run: ${GITHUB_WORKSPACE}/workflow-repo/openapi_diff.sh
