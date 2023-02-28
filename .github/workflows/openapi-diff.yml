@@ -1,0 +1,79 @@
+name: OpenAPI-Diff
+
+on:
+  workflow_call:
+
+env:
+  CURRENT_HASH: ${{ github.event.after }}
+  PREVIOUS_HASH: ${{ github.event.before }}
+
+jobs:
+  changed-files:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.transform-to-matrix.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@v3
+        with:
+         fetch-depth: 2
+         
+           # filter M = modified
+      - name: Identify changed OpenAPI files
+        id: list-files
+        run: |
+          list=$(git diff-tree --diff-filter=M --no-commit-id --name-only \
+                  -r $CURRENT_HASH -- 'openapi/**/*.yml' 'openapi/**/*.yaml')
+          echo "Changed files: $list"
+          changed_files="(${list[*]//$'\n'/ })"
+          echo "changed_files=${changed_files}" >> $GITHUB_OUTPUT
+          
+      - name: Transform into GitHub matrix (special JSON format)
+        id: transform-to-matrix
+        run: |
+          changed_files=${{ steps.list-files.outputs.changed_files }}
+          for i in "${!changed_files[@]}"; do
+            changed_files[$i]="{\"file\": \"${changed_files[$i]}\"}"
+          done
+          matrix=$(echo "{}")
+          if [ -n "$changed_files" ]; then
+            json_elements=$(IFS=, ; echo "${changed_files[*]}")
+            matrix=$(echo "{\"include\":[$json_elements]}")
+          fi
+          echo "Matrix: $matrix"
+          echo "matrix=$matrix" >> $GITHUB_OUTPUT
+  
+  diff-detection:
+    needs: changed-files
+    if: ${{ toJson(fromJson(needs.changed-files.outputs.matrix)) != '{}' }}
+    runs-on: ubuntu-latest
+      # Matrix will spawn a separate job instance for every changed file
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.changed-files.outputs.matrix) }}
+    env:
+      changed_file: ${{ matrix.file }}
+    steps:
+      - uses: actions/checkout@v3
+        with:
+         fetch-depth: 2
+    
+      - name: Get current version of file ${{ env.changed_file }}
+        run: | 
+          git show ${CURRENT_HASH}:${changed_file} > ${changed_file}_new.yml
+          echo "Commit ${CURRENT_HASH}:"
+          ls ${changed_file}_new.yml
+          
+      - name: Get previous version of file ${{ env.changed_file }}
+        run: | 
+          git show ${PREVIOUS_HASH}:${changed_file} > ${changed_file}_old.yml
+          echo "Commit ${PREVIOUS_HASH}:"
+          ls ${changed_file}_old.yml
+      - name: Show diff
+        run: |
+          git diff ${PREVIOUS_HASH} ${CURRENT_HASH} -- ${changed_file}
+      - name: Check for breaking changes
+        run: |
+          java -jar openapi-diff-cli-2.1.0.jar ${changed_file}_old.yml ${changed_file}_new.yml --fail-on-incompatible
+          if [ $? -ne 0 ]; then
+            exit 1
+          fi
