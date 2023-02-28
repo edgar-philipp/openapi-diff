@@ -34,6 +34,7 @@ jobs:
         id: debug
         shell: bash
         run: |
+          cd $GITHUB_ACTION_PATH
           pwd
           ls -lisa
       - name: Identify changed OpenAPI files
