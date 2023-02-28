@@ -19,28 +19,27 @@ env:
   PREVIOUS_HASH: ${{ github.event.before }}
 
 jobs:
-  changed-files:
-    name: Detect changed OpenAPI files
+  checkout-repos:
+    name: Checkout Git Repositories
     runs-on: ubuntu-latest
-    outputs:
-      matrix: ${{ steps.transform-to-matrix.outputs.matrix }}
     steps:
       - name: Checkout Git Repository
         uses: actions/checkout@v3
         with:
           fetch-depth: 2
-      - name: Checkout Reusable Workflow dir
+      - name: Checkout Reusable Workflow for Scripts
         uses: actions/checkout@v3
         with:
           repository: edgar-philipp/openapi-diff
-          path: workflow-repo    
-      - name: Debug
-        id: debug
-        shell: bash
-        run: |
-          cd ${GITHUB_WORKSPACE}/workflow-repo
-          pwd
-          ls -lisa
+          path: workflow-repo
+    
+  changed-files:
+    name: Detect changed OpenAPI files
+    needs: checkout-repos
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.transform-to-matrix.outputs.matrix }}
+    steps:
       - name: Identify changed OpenAPI files
         id: list-files
         run: ${GITHUB_WORKSPACE}/workflow-repo/list_changed_files.sh
@@ -57,28 +56,17 @@ jobs:
   
   diff-detection:
     name: Diff on OpenAPI file
-    needs: changed-files
+    needs: [changed-files, checkout-repos]
     if: ${{ toJson(fromJson(needs.changed-files.outputs.matrix)) != '{}' }}
     runs-on: ubuntu-latest
       # Matrix will spawn a separate job instance for every changed file
     strategy:
       fail-fast: false
       matrix: ${{ fromJson(needs.changed-files.outputs.matrix) }}
-    env:
-      CHANGED_FILE: ${{ matrix.file }}
     steps:
-      - name: Checkout Git Repository
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 2
-      - name: Checkout Reusable Workflow dir
-        uses: actions/checkout@v3
-        with:
-          repository: edgar-philipp/openapi-diff
-          path: workflow-repo    
-    
       - name: Verify Diffs on OpenAPI File
         id: diff-file
         run: ${GITHUB_WORKSPACE}/workflow-repo/openapi_diff.sh
         shell: bash
-
+        env:
+          CHANGED_FILE: ${{ matrix.file }}
