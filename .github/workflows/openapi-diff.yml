@@ -11,6 +11,11 @@ on:
           ["openapi/**/*.yaml", "openapi/**/*.yml"]
 
 env:
+  GITHUB_SERVER_URL: ${{ github.server_url }}
+  GITHUB_REPOSITORY: ${{ github.repository }}
+  GITHUB_REF: ${{ github.ref }}
+  GITHUB_SHA: ${{ github.sha }}
+  GITHUB_WORKSPACE: ${{ github.workspace }}
   CURRENT_HASH: ${{ github.event.after }}
   PREVIOUS_HASH: ${{ github.event.before }}
 
@@ -30,13 +35,6 @@ jobs:
         run: $GITHUB_ACTION_PATH/list_changed_files.sh
         shell: bash
         env:
-          GITHUB_SERVER_URL: ${{ github.server_url }}
-          GITHUB_REPOSITORY: ${{ github.repository }}
-          GITHUB_REF: ${{ github.ref }}
-          GITHUB_SHA: ${{ github.sha }}
-          GITHUB_WORKSPACE: ${{ github.workspace }}
-          PREVIOUS_HASH: ${{ github.event.before }}
-          CURRENT_HASH: ${{ github.event.after }}
           PATH_FILTERS: ${{ inputs.path-filters }} 
         
       - name: Transform into GitHub matrix (special JSON format)
@@ -66,12 +64,5 @@ jobs:
         run: $GITHUB_ACTION_PATH/openapi_diff.sh
         shell: bash
         env:
-          GITHUB_SERVER_URL: ${{ github.server_url }}
-          GITHUB_REPOSITORY: ${{ github.repository }}
-          GITHUB_REF: ${{ github.ref }}
-          GITHUB_SHA: ${{ github.sha }}
-          GITHUB_WORKSPACE: ${{ github.workspace }}
-          PREVIOUS_HASH: ${{ github.event.before }}
-          CURRENT_HASH: ${{ github.event.after }}
           CHANGED_FILE: ${{ inputs.changed-file }}
-    
+ 
