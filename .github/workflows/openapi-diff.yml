@@ -26,13 +26,11 @@ jobs:
     outputs:
       matrix: ${{ steps.transform-to-matrix.outputs.matrix }}
     steps:
-      - &checkout_repo
-        name: Checkout Git Repository
+      - name: Checkout Git Repository
         uses: actions/checkout@v3
         with:
           fetch-depth: 2
-      - &checkout_workflow
-        name: Checkout Reusable Workflow for Scripts
+      - name: Checkout Reusable Workflow for Scripts
         uses: actions/checkout@v3
         with:
           repository: edgar-philipp/openapi-diff
@@ -62,8 +60,15 @@ jobs:
       fail-fast: false
       matrix: ${{ fromJson(needs.changed-files.outputs.matrix) }}
     steps:
-      - *checkout_repo
-      - *checkout_workflow
+      - name: Checkout Git Repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 2
+      - name: Checkout Reusable Workflow for Scripts
+        uses: actions/checkout@v3
+        with:
+          repository: edgar-philipp/openapi-diff
+          path: workflow-repo
 
       - name: Verify Diffs on OpenAPI File
         id: diff-file
