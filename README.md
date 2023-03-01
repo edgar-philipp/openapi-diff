@@ -8,7 +8,7 @@ open-source OpenAPI diff tool paired with GitHub actions.
 You can integrate this workflow into your project, by adding following snippet into your GitHub action workflow under `.github/workflows`:
 
 ```yml
- name: Reuse Workflow Diff-Detection
+name: Reuse Workflow Diff-Detection
 
 on:
   label:
