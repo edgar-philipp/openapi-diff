@@ -1,0 +1,10 @@
+# Configuration for Spectral
+
+extends:
+  - [spectral:oas] # Rules can be found here https://meta.stoplight.io/docs/spectral/4dec24461f3af-open-api-rules
+
+formats: ['oas3.0']
+
+rules:
+  info-license: off
+  license-url: off
