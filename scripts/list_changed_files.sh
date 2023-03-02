@@ -10,7 +10,7 @@ elif [ $OPERATION -eq "Changed" ]; then
 	$flag="M"
 else 
   echo "Usage: OPERATION must be one of ['Added', 'Deleted', 'Modified', 'Changed']"
-  exit(1)
+  exit 1
 fi
 
 echo "::group::List ${OPERATION} Files"
