@@ -4,7 +4,7 @@ if [ "$OPERATION" = "Added" ]; then
   flag="A"
 elif [ "$OPERATION" = "Deleted" ]; then
   flag="D"
-elif [ "$OPERATION" in ("Modified", "Changed") ]; then
+elif [ "$OPERATION" = "Modified" || "$OPERATION" = "Changed") ]; then
   flag="M"
 else 
   echo "Usage: OPERATION must be one of ['Added', 'Deleted', 'Modified', 'Changed']"
