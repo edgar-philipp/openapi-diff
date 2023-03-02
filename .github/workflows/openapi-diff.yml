@@ -24,7 +24,8 @@ jobs:
     name: Detect changed OpenAPI files
     runs-on: ubuntu-latest
     outputs:
-      matrix: ${{ steps.transform-to-matrix.outputs.matrix }}
+      matrix-added-files: ${{ steps.added-files-to-matrix.outputs.matrix }}
+      matrix-changed-files: ${{ steps.changed-files-to-matrix.outputs.matrix }}
     steps:
       - name: Checkout Git Repository
         uses: actions/checkout@v3
@@ -36,29 +37,69 @@ jobs:
           repository: edgar-philipp/openapi-diff
           path: workflow-repo
 
-      - name: Identify changed OpenAPI files
-        id: list-files
+      - name: Identify Added OpenAPI files
+        id: list-added-files
         run: ${GITHUB_WORKSPACE}/workflow-repo/scripts/list_changed_files.sh
         shell: bash
         env:
-          PATH_FILTERS: ${{ inputs.path-filters }} 
-        
-      - name: Transform into GitHub matrix (special JSON format)
-        id: transform-to-matrix
+          PATH_FILTERS: ${{ inputs.path-filters }}
+          OPERATION: Added
+
+      - name: Identify Changed OpenAPI files
+        id: list-changed-files
+        run: ${GITHUB_WORKSPACE}/workflow-repo/scripts/list_changed_files.sh
+        shell: bash
+        env:
+          PATH_FILTERS: ${{ inputs.path-filters }}
+          OPERATION: Changed
+      
+      - name: Transform added files into GitHub matrix (special JSON format)
+        id: added-files-to-matrix
         run: ${GITHUB_WORKSPACE}/workflow-repo/scripts/transform_to_github_matrix.sh
         shell: bash
         env:
-          CHANGED_FILES: ${{ steps.list-files.outputs.changed_files }}
+          CHANGED_FILES: ${{ steps.list-added-files.outputs.changed_files }}
+      
+      - name: Transform changed files into GitHub matrix (special JSON format)
+        id: changed-files-to-matrix
+        run: ${GITHUB_WORKSPACE}/workflow-repo/scripts/transform_to_github_matrix.sh
+        shell: bash
+        env:
+          CHANGED_FILES: ${{ steps.list-changed-files.outputs.changed_files }}
   
+  openapi-linter:
+    name: Lint new OpenAPI files
+    needs: changed-files
+    if: ${{ toJson(fromJson(needs.changed-files.outputs.matrix-added-files)) != '{}' }}
+    runs-on: ubuntu-latest
+      # Matrix will spawn a separate job instance for every added file
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.changed-files.outputs.matrix-added-files) }}
+    steps:
+      - name: Checkout Git Repository
+        uses: actions/checkout@v3
+      - name: Checkout Reusable Workflow for Scripts
+        uses: actions/checkout@v3
+        with:
+          repository: edgar-philipp/openapi-diff
+          path: workflow-repo
+          
+      - name: Run Spectral Linter
+        uses: stoplightio/spectral-action@latest
+        with:
+          file_glob: ${{ matrix.file }}
+          # spectral_ruleset:
+          
   diff-detection:
     name: Diff on OpenAPI file
     needs: changed-files
-    if: ${{ toJson(fromJson(needs.changed-files.outputs.matrix)) != '{}' }}
+    if: ${{ toJson(fromJson(needs.changed-files.outputs.matrix-changed-files)) != '{}' }}
     runs-on: ubuntu-latest
       # Matrix will spawn a separate job instance for every changed file
     strategy:
       fail-fast: false
-      matrix: ${{ fromJson(needs.changed-files.outputs.matrix) }}
+      matrix: ${{ fromJson(needs.changed-files.outputs.matrix-changed-files) }}
     steps:
       - name: Checkout Git Repository
         uses: actions/checkout@v3
@@ -69,6 +110,12 @@ jobs:
         with:
           repository: edgar-philipp/openapi-diff
           path: workflow-repo
+
+      - name: Run Spectral Linter
+        uses: stoplightio/spectral-action@latest
+        with:
+          file_glob: ${{ matrix.file }}
+          # spectral_ruleset:
 
       - name: Verify Diffs on OpenAPI File
         id: diff-file
