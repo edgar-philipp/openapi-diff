@@ -89,7 +89,7 @@ jobs:
         uses: stoplightio/spectral-action@latest
         with:
           file_glob: ${{ matrix.file }}
-          spectral_ruleset: ${GITHUB_WORKSPACE}/workflow-repo/linter/spectral.yml
+          spectral_ruleset: workflow-repo/linter/spectral.yml
           
   diff-detection:
     name: Diff on OpenAPI file
@@ -115,7 +115,7 @@ jobs:
         uses: stoplightio/spectral-action@latest
         with:
           file_glob: ${{ matrix.file }}
-          spectral_ruleset: ${GITHUB_WORKSPACE}/workflow-repo/linter/spectral.yml
+          spectral_ruleset: workflow-repo/linter/spectral.yml
           
       - name: Verify Diffs on OpenAPI File
         id: diff-file
