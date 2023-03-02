@@ -1,13 +1,11 @@
 #!/bin/bash
 
 if [ "$OPERATION" = "Added" ]; then
-  $flag="A"
+  flag="A"
 elif [ "$OPERATION" = "Deleted" ]; then
-  $flag="D"
-elif [ "$OPERATION" = "Modified" ]; then
-	$flag="M"
-elif [ "$OPERATION" = "Changed" ]; then
-	$flag="M"
+  flag="D"
+elif [ "$OPERATION" in ("Modified", "Changed") ]; then
+  flag="M"
 else 
   echo "Usage: OPERATION must be one of ['Added', 'Deleted', 'Modified', 'Changed']"
   exit 1
