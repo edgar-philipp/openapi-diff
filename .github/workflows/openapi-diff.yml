@@ -43,7 +43,7 @@ jobs:
         shell: bash
         env:
           PATH_FILTERS: ${{ inputs.path-filters }}
-          OPERATION: Added
+          OPERATION: 'Added'
 
       - name: Identify Changed OpenAPI files
         id: list-changed-files
@@ -51,7 +51,7 @@ jobs:
         shell: bash
         env:
           PATH_FILTERS: ${{ inputs.path-filters }}
-          OPERATION: Changed
+          OPERATION: 'Changed'
       
       - name: Transform added files into GitHub matrix (special JSON format)
         id: added-files-to-matrix
