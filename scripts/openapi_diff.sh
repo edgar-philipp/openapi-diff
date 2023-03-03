@@ -16,11 +16,15 @@ git diff ${PREVIOUS_HASH} ${CURRENT_HASH} -- ${CHANGED_FILE}
 echo "Check for breaking changes"
 
 java -jar openapi-diff-cli-2.1.0.jar ${CHANGED_FILE}_old.yml ${CHANGED_FILE}_new.yml --fail-on-incompatible --markdown Summary.md
-less Summary.md >> $GITHUB_STEP_SUMMARY
+ls Summary.md
+cat Summary.md
 
 if [ $? -ne 0 ]; then
   echo "::error::Breaking changes on ${CHANGED_FILE}" 
+  cat Summary.md >> $GITHUB_STEP_SUMMARY
   exit 1
 fi
+
+cat Summary.md >> $GITHUB_STEP_SUMMARY
 
 echo "::endgroup::"
