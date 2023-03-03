@@ -1,5 +1,6 @@
 extends: ["spectral:oas"]
 
 rules:
+  unrecognized-format: error
   info-license: off
   license-url: off
