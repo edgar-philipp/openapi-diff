@@ -1,5 +1,11 @@
 #!/bin/bash
 
+function to_step_summary {
+  while read line; do
+    echo "${line}" >> $GITHUB_STEP_SUMMARY
+  done < "$1"
+}
+
 echo "::group::OpenAPI Diff"
 
 echo "Get current version of file ${CHANGED_FILE}, commit ${CURRENT_HASH}"
@@ -14,17 +20,18 @@ echo "diff ${PREVIOUS_HASH} ${CURRENT_HASH} -- ${CHANGED_FILE}"
 git diff ${PREVIOUS_HASH} ${CURRENT_HASH} -- ${CHANGED_FILE}
 
 echo "Check for breaking changes"
+report="Summary.md"
+java -jar openapi-diff-cli-2.1.0.jar ${CHANGED_FILE}_old.yml ${CHANGED_FILE}_new.yml --fail-on-incompatible --markdown ${report}
 
-java -jar openapi-diff-cli-2.1.0.jar ${CHANGED_FILE}_old.yml ${CHANGED_FILE}_new.yml --fail-on-incompatible --markdown Summary.md
-ls Summary.md
-cat Summary.md
+echo "Report saved:"
+ls ${report}
 
 if [ $? -ne 0 ]; then
   echo "::error::Breaking changes on ${CHANGED_FILE}" 
-  cat Summary.md >> $GITHUB_STEP_SUMMARY
+  to_step_summary ${report} 
   exit 1
 fi
 
-cat Summary.md >> $GITHUB_STEP_SUMMARY
+to_step_summary ${report}
 
 echo "::endgroup::"
