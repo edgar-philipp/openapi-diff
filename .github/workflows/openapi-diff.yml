@@ -91,7 +91,13 @@ jobs:
           image: stoplight/spectral:latest
           options: -v ${{ github.workspace }}:${{ github.workspace }} -w ${{ github.workspace }}
           run: spectral lint --ruleset workflow-repo/linter/spectral.yml --output linter.out ${{ matrix.file }}
-          
+      - name: Linter Report
+        id: linter-report
+        run: ${GITHUB_WORKSPACE}/workflow-repo/scripts/lint_report.sh
+        shell: bash
+        env:
+          LINT_RESULT: linter.out
+        
   diff-detection:
     name: Diff on OpenAPI file
     needs: changed-files
@@ -118,7 +124,13 @@ jobs:
           image: stoplight/spectral:latest
           options: -v ${{ github.workspace }}:${{ github.workspace }} -w ${{ github.workspace }}
           run: spectral lint --ruleset workflow-repo/linter/spectral.yml --output linter.out ${{ matrix.file }}
-          
+      - name: Linter Report
+        id: linter-report
+        run: ${GITHUB_WORKSPACE}/workflow-repo/scripts/lint_report.sh
+        shell: bash
+        env:
+          LINT_RESULT: linter.out
+        
       - name: Verify Diffs on OpenAPI File
         id: diff-file
         run: ${GITHUB_WORKSPACE}/workflow-repo/scripts/openapi_diff.sh
