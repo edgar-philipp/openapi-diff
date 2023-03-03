@@ -14,7 +14,11 @@ echo "diff ${PREVIOUS_HASH} ${CURRENT_HASH} -- ${CHANGED_FILE}"
 git diff ${PREVIOUS_HASH} ${CURRENT_HASH} -- ${CHANGED_FILE}
 
 echo "Check for breaking changes"
-java -jar openapi-diff-cli-2.1.0.jar ${CHANGED_FILE}_old.yml ${CHANGED_FILE}_new.yml --fail-on-incompatible
+command="java -jar openapi-diff-cli-2.1.0.jar ${CHANGED_FILE}_old.yml ${CHANGED_FILE}_new.yml --fail-on-incompatible"
+echo $command 
+result=$( eval $command)
+echo $result
+
 if [ $? -ne 0 ]; then
   echo "::error::Breaking changes on ${CHANGED_FILE}" 
   exit 1
