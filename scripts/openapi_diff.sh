@@ -3,6 +3,7 @@
 function to_step_summary {
   echo "Report saved:"
   ls $1
+  echo "### OpenAPI Diff Report Summary" >> $GITHUB_STEP_SUMMARY
   while read line; do
     echo "Line: ${line}"
     echo "${line}" >> $GITHUB_STEP_SUMMARY
