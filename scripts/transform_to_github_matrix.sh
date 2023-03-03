@@ -15,7 +15,7 @@ if [ -n "$changed_files" ]; then
   matrix=$(echo "{\"include\":[$json_elements]}")
 fi
 
-echo "Matrix: $matrix"
+echo "::info::Matrix: $matrix"
 echo "matrix=$matrix" >> $GITHUB_OUTPUT
 
 echo "::endgroup::"
