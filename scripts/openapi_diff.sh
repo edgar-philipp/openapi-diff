@@ -16,9 +16,9 @@ function generate_report {
 
 function generate_diff {
   echo "### Diff" >> $GITHUB_STEP_SUMMARY
-  echo "```diff" >> $GITHUB_STEP_SUMMARY
+  echo '```diff' >> $GITHUB_STEP_SUMMARY
   file_to_summary $1
-  echo "```" >> $GITHUB_STEP_SUMMARY
+  echo '```' >> $GITHUB_STEP_SUMMARY
 }
 
 echo "::group::OpenAPI Diff"
