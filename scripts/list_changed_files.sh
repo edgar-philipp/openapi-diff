@@ -21,7 +21,7 @@ echo $(git log --oneline)
 command="git diff-tree --diff-filter=${flag} --no-commit-id --name-only -r $CURRENT_HASH -- ${PATH_FILTERS}"
 echo $command 
 list=$( eval $command)
-echo "::info::${OPERATION} files: $list"
+echo "${OPERATION} files: $list"
 
 # Remove CarriageReturn and LineFeed (CR/LF):
 changed_files="${list[*]//$'\n'/ }"
