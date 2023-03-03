@@ -1,5 +1,20 @@
 #!/bin/bash
 
+echo "::group::OpenAPI Diff"
+
+echo "Get current version of file ${CHANGED_FILE}, commit ${CURRENT_HASH}"
+git show ${CURRENT_HASH}:${CHANGED_FILE} > ${CHANGED_FILE}_new.yml
+ls ${CHANGED_FILE}_new.yml
+
+echo "Get previous version of file ${CHANGED_FILE}, commit ${PREVIOUS_HASH}"
+git show ${PREVIOUS_HASH}:${CHANGED_FILE} > ${CHANGED_FILE}_old.yml
+ls ${CHANGED_FILE}_old.yml
+
+echo "git diff ${PREVIOUS_HASH} ${CURRENT_HASH} -- ${CHANGED_FILE}"
+git diff ${PREVIOUS_HASH} ${CURRENT_HASH} -- ${CHANGED_FILE} > ${CHANGED_FILE}.diff
+
+### Reporting ###
+
 function file_to_summary {
   while read line; do
     echo "Line: ${line}"
@@ -15,24 +30,15 @@ function generate_report {
 }
 
 function generate_diff {
+  echo "Diff saved:"
+  ls $1
   echo "### Diff" >> $GITHUB_STEP_SUMMARY
   echo '```diff' >> $GITHUB_STEP_SUMMARY
   file_to_summary $1
   echo '```' >> $GITHUB_STEP_SUMMARY
 }
 
-echo "::group::OpenAPI Diff"
-
-echo "Get current version of file ${CHANGED_FILE}, commit ${CURRENT_HASH}"
-git show ${CURRENT_HASH}:${CHANGED_FILE} > ${CHANGED_FILE}_new.yml
-ls ${CHANGED_FILE}_new.yml
-
-echo "Get previous version of file ${CHANGED_FILE}, commit ${PREVIOUS_HASH}"
-git show ${PREVIOUS_HASH}:${CHANGED_FILE} > ${CHANGED_FILE}_old.yml
-ls ${CHANGED_FILE}_old.yml
-
-echo "diff ${PREVIOUS_HASH} ${CURRENT_HASH} -- ${CHANGED_FILE}"
-git diff ${PREVIOUS_HASH} ${CURRENT_HASH} -- ${CHANGED_FILE} > ${CHANGED_FILE}.diff
+### OpenAPI Diff ###
 
 echo "Check for breaking changes"
 report="Summary.md"
