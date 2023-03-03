@@ -44,7 +44,11 @@ report="Summary.md"
 java -jar openapi-diff-cli-2.1.0.jar ${CHANGED_FILE}_old.yml ${CHANGED_FILE}_new.yml --fail-on-incompatible --markdown ${report}
 
 if [ $? -ne 0 ]; then
-  echo "::error::Breaking changes on ${CHANGED_FILE}"
+  if [[ -f "$report" ]]; then
+    echo "::error::Breaking changes on ${CHANGED_FILE}"
+  else
+    echo "::error::Could not process ${CHANGED_FILE}"
+  fi
   generate_report ${report}
   generate_diff ${CHANGED_FILE}.diff
   exit 1
