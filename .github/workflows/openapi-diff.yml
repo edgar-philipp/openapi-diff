@@ -90,7 +90,7 @@ jobs:
         with:
           image: stoplight/spectral:latest
           options: -v ${{ github.workspace }}:${{ github.workspace }} -w ${{ github.workspace }}
-          run: spectral lint -r workflow-repo/linter/spectral.yml -o stdout -o linter.out ${{ matrix.file }}
+          run: spectral lint ${{ matrix.file }} -r workflow-repo/linter/spectral.yml -o linter.out
       - name: Linter Report
         id: linter-report
         run: ${GITHUB_WORKSPACE}/workflow-repo/scripts/lint_report.sh
@@ -123,7 +123,7 @@ jobs:
         with:
           image: stoplight/spectral:latest
           options: -v ${{ github.workspace }}:${{ github.workspace }} -w ${{ github.workspace }}
-          run: spectral lint -r workflow-repo/linter/spectral.yml -o stdout -o linter.out ${{ matrix.file }}
+          run: spectral lint ${{ matrix.file }} -r workflow-repo/linter/spectral.yml -o linter.out
       - name: Linter Report
         id: linter-report
         run: ${GITHUB_WORKSPACE}/workflow-repo/scripts/lint_report.sh
