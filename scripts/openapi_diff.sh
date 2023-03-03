@@ -8,6 +8,10 @@ function to_step_summary {
     echo "Line: ${line}"
     echo "${line}" >> $GITHUB_STEP_SUMMARY
   done < "$1"
+  echo "" >> $GITHUB_STEP_SUMMARY
+  echo "### Diff" >> $GITHUB_STEP_SUMMARY
+  echo "" >> $GITHUB_STEP_SUMMARY
+  echo "$DIFF" >> $GITHUB_STEP_SUMMARY
 }
 
 echo "::group::OpenAPI Diff"
@@ -21,7 +25,7 @@ git show ${PREVIOUS_HASH}:${CHANGED_FILE} > ${CHANGED_FILE}_old.yml
 ls ${CHANGED_FILE}_old.yml
 
 echo "diff ${PREVIOUS_HASH} ${CURRENT_HASH} -- ${CHANGED_FILE}"
-git diff ${PREVIOUS_HASH} ${CURRENT_HASH} -- ${CHANGED_FILE}
+git diff ${PREVIOUS_HASH} ${CURRENT_HASH} -- ${CHANGED_FILE} >> $DIFF
 
 echo "Check for breaking changes"
 report="Summary.md"
