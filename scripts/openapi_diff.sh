@@ -2,11 +2,11 @@
 
 function to_step_summary {
   echo "Report saved:"
-  ls $0
+  ls $1
   while read line; do
     echo "Line: ${line}"
     echo "${line}" >> $GITHUB_STEP_SUMMARY
-  done < "$0"
+  done < "$1"
 }
 
 echo "::group::OpenAPI Diff"
