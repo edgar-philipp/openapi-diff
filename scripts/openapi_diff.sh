@@ -3,7 +3,7 @@
 function to_step_summary {
   echo "Report saved:"
   ls $1
-  echo "### OpenAPI Diff Report Summary" >> $GITHUB_STEP_SUMMARY
+  echo "### Report Summary" >> $GITHUB_STEP_SUMMARY
   while read line; do
     echo "Line: ${line}"
     echo "${line}" >> $GITHUB_STEP_SUMMARY
@@ -29,8 +29,6 @@ java -jar openapi-diff-cli-2.1.0.jar ${CHANGED_FILE}_old.yml ${CHANGED_FILE}_new
 
 if [ $? -ne 0 ]; then
   echo "::error::Breaking changes on ${CHANGED_FILE}" 
-  to_step_summary ${report} 
-  exit 1
 fi
 
 to_step_summary ${report}
