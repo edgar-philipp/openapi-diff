@@ -90,7 +90,7 @@ jobs:
         with:
           image: stoplight/spectral:latest
           options: -v ${{ github.workspace }}:${{ github.workspace }} -w ${{ github.workspace }}
-          run: spectral lint --ruleset workflow-repo/linter/spectral.yml ${{ matrix.file }}
+          run: spectral lint --ruleset workflow-repo/linter/spectral.yml --output linter.out ${{ matrix.file }}
           
   diff-detection:
     name: Diff on OpenAPI file
@@ -117,7 +117,7 @@ jobs:
         with:
           image: stoplight/spectral:latest
           options: -v ${{ github.workspace }}:${{ github.workspace }} -w ${{ github.workspace }}
-          run: spectral lint --ruleset workflow-repo/linter/spectral.yml ${{ matrix.file }}
+          run: spectral lint --ruleset workflow-repo/linter/spectral.yml --output linter.out ${{ matrix.file }}
           
       - name: Verify Diffs on OpenAPI File
         id: diff-file
