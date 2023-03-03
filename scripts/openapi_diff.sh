@@ -17,7 +17,6 @@ git diff ${PREVIOUS_HASH} ${CURRENT_HASH} -- ${CHANGED_FILE} > ${CHANGED_FILE}.d
 
 function file_to_summary {
   while read line; do
-    echo "Line: ${line}"
     echo "${line}" >> $GITHUB_STEP_SUMMARY
   done < "$1"
 }
@@ -47,7 +46,7 @@ java -jar openapi-diff-cli-2.1.0.jar ${CHANGED_FILE}_old.yml ${CHANGED_FILE}_new
 if [ $? -ne 0 ]; then
   echo "::error::Breaking changes on ${CHANGED_FILE}"
   generate_report ${report}
-  gererate_diff ${CHANGED_FILE}.diff
+  generate_diff ${CHANGED_FILE}.diff
   exit 1
 fi
 
