@@ -1,4 +1,4 @@
-extends: ["spectral:oas", "@stoplight/spectral-owasp-ruleset"]
+extends: ["spectral:oas"]
 
 rules:
   info-license: off
