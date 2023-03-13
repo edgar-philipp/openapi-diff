@@ -20,7 +20,6 @@ env:
   GITHUB_WORKSPACE: ${{ github.workspace }}
   CURRENT_HASH: ${{ github.event.after }}
   PREVIOUS_HASH: ${{ github.event.before }}
-  RULE_OVERWRITES: ${{ fromJson(inputs.rule-overwrites) }}
 
 jobs:
     
@@ -31,6 +30,8 @@ jobs:
       matrix-added-files: ${{ steps.added-files-to-matrix.outputs.matrix }}
       matrix-changed-files: ${{ steps.changed-files-to-matrix.outputs.matrix }}
     steps:
+      - run: |
+          echo "${{ fromJson(inputs.rule-overwrites) }}"
       - name: Checkout Git Repository
         uses: actions/checkout@v3
         with:
