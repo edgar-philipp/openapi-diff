@@ -7,7 +7,10 @@ on:
         description: 'Space-separated list of path filter expressions, e.g. \"openapi/**/*.yaml openapi/**/*.yml\"'
         type: string
         required: true
-        default: "openapi/**/*.yaml openapi/**/*.yml"
+      rule-overwrites:
+        description: 'JSON structure for rule overwrites, where the OAS rule names (see https://github.com/stoplightio/spectral/blob/develop/docs/reference/openapi-rules.md) are keys, and severity (see https://github.com/stoplightio/spectral/blob/develop/docs/guides/4a-rules.md#severity) are values, e.g. { "info-license": "off", "license-url": "off" }'
+        type: string
+        default: '{}'
 
 env:
   GITHUB_SERVER_URL: ${{ github.server_url }}
