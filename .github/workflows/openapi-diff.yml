@@ -20,6 +20,7 @@ env:
   GITHUB_WORKSPACE: ${{ github.workspace }}
   CURRENT_HASH: ${{ github.event.after }}
   PREVIOUS_HASH: ${{ github.event.before }}
+  RULE_OVERWRITES: ${{ fromJson(input.rule-overwrites) }}
 
 jobs:
     
