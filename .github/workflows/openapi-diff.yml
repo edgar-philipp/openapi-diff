@@ -71,6 +71,7 @@ jobs:
     name: Lint new OpenAPI files
     needs: changed-files
     if: ${{ toJson(fromJson(needs.changed-files.outputs.matrix-added-files)) != '{}' }}
+    environment: Development
     runs-on: ubuntu-latest
       # Matrix will spawn a separate job instance for every added file
     strategy:
@@ -103,6 +104,7 @@ jobs:
     name: Diff on OpenAPI file
     needs: changed-files
     if: ${{ toJson(fromJson(needs.changed-files.outputs.matrix-changed-files)) != '{}' }}
+    environment: Development
     runs-on: ubuntu-latest
       # Matrix will spawn a separate job instance for every changed file
     strategy:
