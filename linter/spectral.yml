@@ -3,3 +3,4 @@ extends: ["spectral:oas"]
 rules:
   info-license: off
   license-url: off
+  foo-bar: info
