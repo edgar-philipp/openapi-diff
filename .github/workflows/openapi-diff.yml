@@ -55,7 +55,7 @@ jobs:
         run: ${GITHUB_WORKSPACE}/workflow-repo/scripts/list_changed_files.sh
         shell: bash
         env:
-          PATH_FILTERS: ${{ inputs.path-filters }}
+          PATH_FILTERS: ${{ inputs.path-filters }} | tr -d {,}
           OPERATION: 'Changed'
       
       - name: Transform added files into GitHub matrix (special JSON format)
