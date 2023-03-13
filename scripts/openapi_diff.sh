@@ -38,17 +38,29 @@ function generate_diff {
   echo '```' >> $GITHUB_STEP_SUMMARY
 }
 
+function generate_errors {
+  echo "Errors saved:"
+  ls $1
+  echo "### Errors" >> $GITHUB_STEP_SUMMARY
+  echo '```' >> $GITHUB_STEP_SUMMARY
+  file_to_summary $1
+  echo '```' >> $GITHUB_STEP_SUMMARY
+}
+
 ### OpenAPI Diff ###
 
 echo "Check for breaking changes"
 report="Summary.md"
-java -jar openapi-diff-cli-${CLI_VERSION}.jar ${CHANGED_FILE}_old.yml ${CHANGED_FILE}_new.yml --fail-on-incompatible --markdown ${report}
+java -jar openapi-diff-cli-${CLI_VERSION}.jar ${CHANGED_FILE}_old.yml ${CHANGED_FILE}_new.yml --fail-on-incompatible --markdown ${report} 2>diff.err
 
 if [ $? -ne 0 ]; then
   if [[ -f "$report" ]]; then
     echo "::error::Breaking changes on ${CHANGED_FILE}"
   else
     echo "::error::Could not process ${CHANGED_FILE}"
+  fi
+  if [[ -f "diff.err" ]]; then
+    generate_errors diff.err
   fi
   generate_report ${report}
   generate_diff ${CHANGED_FILE}.diff
