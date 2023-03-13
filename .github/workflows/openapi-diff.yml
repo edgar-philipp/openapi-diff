@@ -31,7 +31,9 @@ jobs:
       matrix-changed-files: ${{ steps.changed-files-to-matrix.outputs.matrix }}
     steps:
       - run: |
-          echo "${{ toJson(fromJson(inputs.rule-overwrites)) }}"
+          custom_rules=`echo "${{ toJson(fromJson(inputs.rule-overwrites)) }}" | tr -d ,{}`
+          echo "Trimmed: ${custom_rules/'\n'}"
+          
       - name: Checkout Git Repository
         uses: actions/checkout@v3
         with:
@@ -55,7 +57,7 @@ jobs:
         run: ${GITHUB_WORKSPACE}/workflow-repo/scripts/list_changed_files.sh
         shell: bash
         env:
-          PATH_FILTERS: ${{ inputs.path-filters }} | tr -d {,}
+          PATH_FILTERS: ${{ inputs.path-filters }}
           OPERATION: 'Changed'
       
       - name: Transform added files into GitHub matrix (special JSON format)
