@@ -89,8 +89,9 @@ jobs:
         uses: addnab/docker-run-action@v3
         with:
           image: stoplight/spectral:latest
+          shell: bash
           options: -v ${{ github.workspace }}:${{ github.workspace }} -w ${{ github.workspace }}
-          run: spectral lint ${{ matrix.file }} -r workflow-repo/linter/spectral.yml -o linter.out
+          run: spectral lint ${{ matrix.file }} -r workflow-repo/linter/spectral.yml -o linter.out 2>linter.out
       - name: Linter Report
         id: linter-report
         if: ${{ success() || failure() }}
@@ -123,8 +124,9 @@ jobs:
         uses: addnab/docker-run-action@v3
         with:
           image: stoplight/spectral:latest
+          shell: bash
           options: -v ${{ github.workspace }}:${{ github.workspace }} -w ${{ github.workspace }}
-          run: spectral lint ${{ matrix.file }} -r workflow-repo/linter/spectral.yml -o linter.out
+          run: spectral lint ${{ matrix.file }} -r workflow-repo/linter/spectral.yml -o linter.out 2>linter.out
       - name: Linter Report
         id: linter-report
         if: ${{ success() || failure() }}
