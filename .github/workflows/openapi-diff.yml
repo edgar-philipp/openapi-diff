@@ -8,7 +8,7 @@ on:
         type: string
         required: true
       rule-overwrites:
-        description: 'JSON structure for rule overwrites, where the OAS rule names (see https://github.com/stoplightio/spectral/blob/develop/docs/reference/openapi-rules.md) are keys, and severity (see https://github.com/stoplightio/spectral/blob/develop/docs/guides/4a-rules.md#severity) are values, e.g. { "info-license": "off", "license-url": "off" }'
+        description: 'JSON structure for rule overwrites, where the OAS rule names (see https://github.com/stoplightio/spectral/blob/develop/docs/reference/openapi-rules.md) are keys, and severity (see https://github.com/stoplightio/spectral/blob/develop/docs/guides/4a-rules.md#severity) are values, e.g. { "info-license": "info", "license-url": "off" }'
         type: string
         default: '{}'
 
@@ -32,7 +32,8 @@ jobs:
     steps:
       - run: |
           custom_rules=`echo "${{ toJson(fromJson(inputs.rule-overwrites)) }}" | tr -d ,{}`
-          echo "Trimmed: ${custom_rules/'\n'}"
+          custom_rules=${custom_rules/'\n'}
+          echo "Custom rules: ${custom_rules}"
           
       - name: Checkout Git Repository
         uses: actions/checkout@v3
