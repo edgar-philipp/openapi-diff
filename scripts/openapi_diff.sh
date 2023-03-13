@@ -1,4 +1,5 @@
 #!/bin/bash
+CLI_VERSION=2.1.0
 
 echo "::group::OpenAPI Diff"
 
@@ -41,7 +42,7 @@ function generate_diff {
 
 echo "Check for breaking changes"
 report="Summary.md"
-java -jar openapi-diff-cli-2.1.0.jar ${CHANGED_FILE}_old.yml ${CHANGED_FILE}_new.yml --fail-on-incompatible --markdown ${report}
+java -jar openapi-diff-cli-${CLI_VERSION}.jar ${CHANGED_FILE}_old.yml ${CHANGED_FILE}_new.yml --fail-on-incompatible --markdown ${report}
 
 if [ $? -ne 0 ]; then
   if [[ -f "$report" ]]; then
