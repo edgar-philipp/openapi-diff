@@ -90,8 +90,10 @@ jobs:
 
       - name: Add custom Spectral rules
         id: custom-spectral-rules
-        run: ${GITHUB_WORKSPACE}/workflow-repo/scripts/add_custom_spectral_rules.sh ${{ toJson(fromJson(inputs.rule-overwrites)) }}
-        shell: bash 
+        run: ${GITHUB_WORKSPACE}/workflow-repo/scripts/add_custom_spectral_rules.sh
+        shell: bash
+        env:
+          JSON_INPUT: ${{ toJson(fromJson(inputs.rule-overwrites)) }}
       - name: Run Spectral Linter
         uses: addnab/docker-run-action@v3
         with:
@@ -128,8 +130,10 @@ jobs:
 
       - name: Add custom Spectral rules
         id: custom-spectral-rules
-        run: ${GITHUB_WORKSPACE}/workflow-repo/scripts/add_custom_spectral_rules.sh ${{ toJson(fromJson(inputs.rule-overwrites)) }}
+        run: ${GITHUB_WORKSPACE}/workflow-repo/scripts/add_custom_spectral_rules.sh
         shell: bash
+        env:
+          JSON_INPUT: ${{ toJson(fromJson(inputs.rule-overwrites)) }}
       - name: Run Spectral Linter
         uses: addnab/docker-run-action@v3
         with:
