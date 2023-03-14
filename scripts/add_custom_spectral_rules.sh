@@ -10,5 +10,5 @@ cp ${linter_dir}/spectral_template.yml ${linter_dir}/spectral.yml
 result=$(CUSTOM_RULES=${custom_rules} envsubst < ${linter_dir}/spectral.yml)
 echo "$result" > ${linter_dir}/spectral.yml
 
-echo "Generated Spectral file:"
+echo "** Generated Spectral file: **"
 less ${linter_dir}/spectral.yml
