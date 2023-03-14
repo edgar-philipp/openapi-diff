@@ -30,11 +30,6 @@ jobs:
       matrix-added-files: ${{ steps.added-files-to-matrix.outputs.matrix }}
       matrix-changed-files: ${{ steps.changed-files-to-matrix.outputs.matrix }}
     steps:
-      - run: |
-          custom_rules=`echo "${{ toJson(fromJson(inputs.rule-overwrites)) }}" | tr -d ,{}`
-          custom_rules=${custom_rules/'\n'}
-          echo "Custom rules: ${custom_rules}"
-          
       - name: Checkout Git Repository
         uses: actions/checkout@v3
         with:
@@ -93,6 +88,10 @@ jobs:
           repository: edgar-philipp/openapi-diff
           path: workflow-repo
 
+      - name: Add custom Spectral rules
+        id: custom-spectral-rules
+        run: ${GITHUB_WORKSPACE}/workflow-repo/scripts/add_custom_spectral_rules.sh ${{ toJson(fromJson(inputs.rule-overwrites)) }}
+        shell: bash 
       - name: Run Spectral Linter
         uses: addnab/docker-run-action@v3
         with:
@@ -127,6 +126,10 @@ jobs:
           repository: edgar-philipp/openapi-diff
           path: workflow-repo
 
+      - name: Add custom Spectral rules
+        id: custom-spectral-rules
+        run: ${GITHUB_WORKSPACE}/workflow-repo/scripts/add_custom_spectral_rules.sh ${{ toJson(fromJson(inputs.rule-overwrites)) }}
+        shell: bash
       - name: Run Spectral Linter
         uses: addnab/docker-run-action@v3
         with:
