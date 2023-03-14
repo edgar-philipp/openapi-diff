@@ -14,6 +14,7 @@ echo "### Lint report" >> $GITHUB_STEP_SUMMARY
 
 echo "#### Spectral file" >> $GITHUB_STEP_SUMMARY
 echo '```' >> $GITHUB_STEP_SUMMARY
+linter_dir=${GITHUB_WORKSPACE}/workflow-repo/linter
 file_to_summary ${linter_dir}/spectral.yml
 echo '```' >> $GITHUB_STEP_SUMMARY
 
