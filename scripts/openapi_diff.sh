@@ -44,7 +44,7 @@ function generate_diff {
 function generate_errors {
   echo "Errors saved:"
   ls $1
-  echo "### Errors" >> $GITHUB_STEP_SUMMARY
+  echo "#### Errors" >> $GITHUB_STEP_SUMMARY
   echo '```' >> $GITHUB_STEP_SUMMARY
   file_to_summary $1
   echo '```' >> $GITHUB_STEP_SUMMARY
