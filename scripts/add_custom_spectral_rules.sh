@@ -1,5 +1,6 @@
 #!/bin/bash
 
+# expects json with custom rules
 custom_rules=`echo "{
   info-license: off,
   license-url: off
