@@ -90,7 +90,7 @@ jobs:
 
       - name: Add custom Spectral rules
         id: custom-spectral-rules
-        run: ${GITHUB_WORKSPACE}/workflow-repo/scripts/add_custom_spectral_rules.sh
+        run: ${GITHUB_WORKSPACE}/workflow-repo/scripts/lint_rules.sh
         shell: bash
         env:
           JSON_INPUT: ${{ toJson(fromJson(inputs.rule-overwrites)) }}
@@ -130,7 +130,7 @@ jobs:
 
       - name: Add custom Spectral rules
         id: custom-spectral-rules
-        run: ${GITHUB_WORKSPACE}/workflow-repo/scripts/add_custom_spectral_rules.sh
+        run: ${GITHUB_WORKSPACE}/workflow-repo/scripts/lint_rules.sh
         shell: bash
         env:
           JSON_INPUT: ${{ toJson(fromJson(inputs.rule-overwrites)) }}
