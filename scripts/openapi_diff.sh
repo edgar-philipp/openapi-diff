@@ -28,14 +28,14 @@ function file_to_summary {
 function generate_report {
   echo "Report saved:"
   ls $1
-  echo "### Report Summary" >> $GITHUB_STEP_SUMMARY
+  echo "### OpenAPI Diff Report" >> $GITHUB_STEP_SUMMARY
   file_to_summary $1
 }
 
 function generate_diff {
   echo "Diff saved:"
   ls $1
-  echo "### Diff" >> $GITHUB_STEP_SUMMARY
+  echo "#### Diff" >> $GITHUB_STEP_SUMMARY
   echo '```diff' >> $GITHUB_STEP_SUMMARY
   file_to_summary $1
   echo '```' >> $GITHUB_STEP_SUMMARY
