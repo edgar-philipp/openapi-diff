@@ -10,5 +10,5 @@ linter_dir=${GITHUB_WORKSPACE}/workflow-repo/linter
 cp ${linter_dir}/spectral_template.yml ${linter_dir}/spectral.yml
 
 result=$(CUSTOM_RULES=${custom_rules} envsubst < ${linter_dir}/spectral.yml)
-echo "$result" > spectral.yml
+echo "$result" > ${linter_dir}/spectral.yml
 echo $'Result:\n'"$result"
