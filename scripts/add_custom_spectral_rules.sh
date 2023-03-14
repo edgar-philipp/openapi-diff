@@ -5,8 +5,9 @@ custom_rules=`echo "$1" | tr -d ,{} | tr '\n' $'\n'`
 custom_rules="rules:${custom_rules/'\n'}"
 echo "${custom_rules}"
 
-cp ./../linter/spectral_template.yml ./../linter/spectral.yml
+pwd
+cp linter/spectral_template.yml linter/spectral.yml
 
-result=$(CUSTOM_RULES=${custom_rules} envsubst < ./../linter/spectral.yml)
+result=$(CUSTOM_RULES=${custom_rules} envsubst < linter/spectral.yml)
 echo "$result" > spectral.yml
 echo $'Result:\n'"$result"
