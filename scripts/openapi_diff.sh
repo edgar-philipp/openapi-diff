@@ -17,9 +17,12 @@ git diff ${PREVIOUS_HASH} ${CURRENT_HASH} -- ${CHANGED_FILE} > ${CHANGED_FILE}.d
 ### Reporting ###
 
 function file_to_summary {
+  OLD_IFS="$IFS"
+  IFS=
   while read line; do
     echo "${line}" >> $GITHUB_STEP_SUMMARY
   done < "$1"
+  IFS="$OLD_IFS"
 }
 
 function generate_report {
