@@ -1,10 +1,7 @@
 #!/bin/bash
 
-# expects json with custom rules
-custom_rules=`echo "{
-  info-license: off,
-  license-url: off
-}" | tr -d ,{} | tr '\n' $'\n'`
+# expects input arg: json with custom rules
+custom_rules=`echo "$1" | tr -d ,{} | tr '\n' $'\n'`
 custom_rules="rules:${custom_rules/'\n'}"
 echo "${custom_rules}"
 
