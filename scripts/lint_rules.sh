@@ -2,7 +2,9 @@
 
 ## expects json with custom rules ##
 custom_rules=`echo "$JSON_INPUT" | tr -d ,{}\" | tr '\n' $'\n'`
-custom_rules="rules:${custom_rules/'\n'}"
+if [ -n "$custom_rules" ]; then
+  custom_rules="rules:${custom_rules/'\n'}"
+fi
 
 linter_dir=${GITHUB_WORKSPACE}/workflow-repo/linter
 cp ${linter_dir}/spectral_template.yml ${linter_dir}/spectral.yml
