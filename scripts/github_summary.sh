@@ -19,8 +19,10 @@ function create_section {
   section_title=$1
   file=$2
   format=$3
+  set -x
   echo "#### $section_title" >> $GITHUB_STEP_SUMMARY
   echo '```$format' >> $GITHUB_STEP_SUMMARY
   file_to_summary $file
   echo '```' >> $GITHUB_STEP_SUMMARY
+  set +x
 }
