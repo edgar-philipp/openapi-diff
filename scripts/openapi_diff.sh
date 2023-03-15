@@ -16,38 +16,25 @@ git diff ${PREVIOUS_HASH} ${CURRENT_HASH} -- ${CHANGED_FILE} > ${CHANGED_FILE}.d
 
 ### Reporting ###
 
-function file_to_summary {
-  OLD_IFS="$IFS"
-  IFS=
-  while read line; do
-    echo "${line}" >> $GITHUB_STEP_SUMMARY
-  done < "$1"
-  IFS="$OLD_IFS"
-}
+source ${GITHUB_WORKSPACE}/workflow-repo/scripts/github_summary.sh
 
 function generate_report {
   echo "Report saved:"
   ls $1
   echo "### OpenAPI Diff Report" >> $GITHUB_STEP_SUMMARY
-  file_to_summary $1
+  file_to_summary $1  
 }
 
 function generate_diff {
   echo "Diff saved:"
   ls $1
-  echo "#### Diff" >> $GITHUB_STEP_SUMMARY
-  echo '```diff' >> $GITHUB_STEP_SUMMARY
-  file_to_summary $1
-  echo '```' >> $GITHUB_STEP_SUMMARY
+  create_section "Diff" $1 diff
 }
 
 function generate_errors {
   echo "Errors saved:"
   ls $1
-  echo "#### Errors" >> $GITHUB_STEP_SUMMARY
-  echo '```' >> $GITHUB_STEP_SUMMARY
-  file_to_summary $1
-  echo '```' >> $GITHUB_STEP_SUMMARY
+  create_section "Errors" $1
 }
 
 ### OpenAPI Diff ###
@@ -63,7 +50,7 @@ if [ $? -ne 0 ]; then
     echo "::error::Could not process ${CHANGED_FILE}"
   fi
   if [[ -f "diff.err" ]]; then
-    generate_errors diff.err
+     generate_errors diff.err
   fi
   generate_report ${report}
   generate_diff ${CHANGED_FILE}.diff
