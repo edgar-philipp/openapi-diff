@@ -21,7 +21,7 @@ source ${GITHUB_WORKSPACE}/workflow-repo/scripts/github_summary.sh
 function generate_report {
   echo "Report saved:"
   ls $1
-  echo "### OpenAPI Diff Report" >> $GITHUB_STEP_SUMMARY
+  create_title "OpenAPI Diff Report"
   file_to_summary $1  
 }
 
