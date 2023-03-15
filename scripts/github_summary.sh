@@ -1,28 +1,37 @@
 #!/bin/bash
 
+function line_to_summary {
+  line=$1
+  tput setaf 2
+  set -x
+  echo '${line}' >> $GITHUB_STEP_SUMMARY
+  { set +x; } 2>/dev/null
+  tput setaf 9
+}
+
 function file_to_summary {
   file=$1
   OLD_IFS="$IFS"
   IFS=
   while read line; do
-    echo "${line}" >> $GITHUB_STEP_SUMMARY
+    line_to_summary "${line}"
   done < "$file"
   IFS="$OLD_IFS"
 }
 
 function create_title {
   title=$1
-  echo "### $title" >> $GITHUB_STEP_SUMMARY
+  line_to_summary "### $title"
 }
 
 function create_section {
   section_title=$1
   file=$2
   format=$3
-  set -x
-  echo "#### $section_title" >> $GITHUB_STEP_SUMMARY
-  echo '```$format' >> $GITHUB_STEP_SUMMARY
+  echo "::group::GitHub Summary $1 $2 $3"
+  line_to_summary "#### $section_title"
+  line_to_summary '```$format'
   file_to_summary $file
-  echo '```' >> $GITHUB_STEP_SUMMARY
-  set +x
+  line_to_summary '```'
+  echo "::endgroup::"
 }
