@@ -26,10 +26,8 @@ function create_section {
   section_title=$1
   file=$2
   format=$3
-  echo "::group::GitHub Summary $1 $2 $3"
   line_to_summary "#### $section_title"
   line_to_summary '```'"$format"
   file_to_summary $file
   line_to_summary '```'
-  echo "::endgroup::"
 }
