@@ -10,6 +10,11 @@ function file_to_summary {
   IFS="$OLD_IFS"
 }
 
+function create_title {
+  title=$1
+  echo "### $title" >> $GITHUB_STEP_SUMMARY
+}
+
 function create_section {
   section_title=$1
   file=$2
