@@ -2,11 +2,9 @@
 
 function line_to_summary {
   line=$1
-  tput setaf 2
   set -x
-  echo '${line}' >> $GITHUB_STEP_SUMMARY
+  echo "${line}" >> $GITHUB_STEP_SUMMARY
   { set +x; } 2>/dev/null
-  tput setaf 9
 }
 
 function file_to_summary {
@@ -30,7 +28,7 @@ function create_section {
   format=$3
   echo "::group::GitHub Summary $1 $2 $3"
   line_to_summary "#### $section_title"
-  line_to_summary '```$format'
+  line_to_summary '```'"$format"
   file_to_summary $file
   line_to_summary '```'
   echo "::endgroup::"
