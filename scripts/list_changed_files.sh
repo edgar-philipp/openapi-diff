@@ -20,7 +20,7 @@ echo "Applying path filters: ${PATH_FILTERS}"
 echo "git log --oneline ${before}..${now}"
 echo $(git log --oneline "${before}".."${now}")
 
-command="git diff-tree --diff-filter=${flag} --no-commit-id --name-only ${before} ${now} -- ${PATH_FILTERS}"
+command="git diff-tree --diff-filter=${flag} --no-commit-id --name-only -r ${before}..${now} -- ${PATH_FILTERS}"
 echo $command 
 list=$( eval $command)
 echo "${OPERATION} files: $list"
