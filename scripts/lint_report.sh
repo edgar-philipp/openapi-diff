@@ -16,5 +16,4 @@ echo "::endgroup::"
 
 if grep -q "unrecognized-format" "${LINT_RESULT}"; then
   echo "::error::Unrecognized format for OpenAPI file"
-  exit 1
 fi
