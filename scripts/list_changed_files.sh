@@ -11,16 +11,7 @@ else
   exit 1
 fi
 
-if [ "$GITHUB_EVENT_NAME" = "pull_request" ]; then
-  before="${GITHUB_BASE_REF}"
-  now="${GITHUB_HEAD_REF}"
-elif [ "$GITHUB_EVENT_NAME" = "push" ]; then 
-  before="${PREVIOUS_HASH}"
-  now="${CURRENT_HASH}"
-else 
-  echo "Usage: currently, only push and pull_request are supported GitHub events."
-  exit 1
-fi  
+source ${GITHUB_WORKSPACE}/workflow-repo/scripts/git_revisions.sh
 
 echo "::group::List ${OPERATION} Files"
 
