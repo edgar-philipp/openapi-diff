@@ -15,6 +15,6 @@ create_section "Results" ${LINT_RESULT} java
 echo "::endgroup::"
 
 if grep -q "unrecognized-format" "${LINT_RESULT}"; then
-  echo "::error::Unrecognized format on ${CHANGED_FILE}"
+  echo "::error::Unrecognized format for OpenAPI file"
   exit 1
 fi
