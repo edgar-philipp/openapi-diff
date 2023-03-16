@@ -3,16 +3,18 @@ CLI_VERSION=2.1.0
 
 echo "::group::OpenAPI Diff"
 
-echo "Get current version of file ${CHANGED_FILE}, commit ${CURRENT_HASH}"
-git show ${CURRENT_HASH}:${CHANGED_FILE} > ${CHANGED_FILE}_new.yml
+source ${GITHUB_WORKSPACE}/workflow-repo/scripts/git_revisions.sh
+
+echo "Get current version of file ${CHANGED_FILE}, commit ${now}"
+git show ${now}:${CHANGED_FILE} > ${CHANGED_FILE}_new.yml
 ls ${CHANGED_FILE}_new.yml
 
-echo "Get previous version of file ${CHANGED_FILE}, commit ${PREVIOUS_HASH}"
-git show ${PREVIOUS_HASH}:${CHANGED_FILE} > ${CHANGED_FILE}_old.yml
+echo "Get previous version of file ${CHANGED_FILE}, commit ${before}"
+git show ${before}:${CHANGED_FILE} > ${CHANGED_FILE}_old.yml
 ls ${CHANGED_FILE}_old.yml
 
-echo "git diff ${PREVIOUS_HASH} ${CURRENT_HASH} -- ${CHANGED_FILE}"
-git diff ${PREVIOUS_HASH} ${CURRENT_HASH} -- ${CHANGED_FILE} > ${CHANGED_FILE}.diff
+echo "git diff ${before} ${now} -- ${CHANGED_FILE}"
+git diff ${before} ${now} -- ${CHANGED_FILE} > ${CHANGED_FILE}.diff
 
 ### Reporting ###
 
