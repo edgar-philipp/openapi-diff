@@ -16,12 +16,15 @@ on:
   push:
     branches: [main]
     paths: ['openapi/**/*.yml', 'openapi/**/*.yaml']
+  pull_request:
+    branches: [main]  
 
 jobs:
   openapi-diff:
     uses: edgar-philipp/openapi-diff/.github/workflows/openapi-diff.yml@main
     with:
       path-filters: 'openapi/**/*.yml openapi/**/*.yaml'
+      rule-overwrites: '{ "info-license": "off", "license-url": "off" }'
 ```
 
 
