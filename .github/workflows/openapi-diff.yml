@@ -18,9 +18,21 @@ env:
   GITHUB_REF: ${{ github.ref }}
   GITHUB_SHA: ${{ github.sha }}
   GITHUB_WORKSPACE: ${{ github.workspace }}
+  
+  # The event that triggered the GitHub action, e.g. push or pull_request.
+  GITHUB_EVENT_NAME: ${{ github.event_name }}
+  
   CURRENT_HASH: ${{ github.event.after }}
   PREVIOUS_HASH: ${{ github.event.before }}
-
+  
+  # The base_ref or target branch of the pull request in a workflow run. 
+  # This property is only available when the event that triggers a workflow run is a pull_request.
+  GITHUB_BASE_REF: ${{ github.base_ref }}
+  
+  # The head_ref or source branch of the pull request in a workflow run. 
+  # This property is only available when the event that triggers a workflow run is a pull_request.
+  GITHUB_HEAD_REF: ${{ github.base_ref }}
+  
 jobs:
     
   changed-files:
