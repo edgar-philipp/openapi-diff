@@ -13,7 +13,7 @@ echo "Get previous version of file ${CHANGED_FILE}, commit ${before}"
 git show ${before}:${CHANGED_FILE} > ${CHANGED_FILE}_old.yml
 ls ${CHANGED_FILE}_old.yml
 
-echo "git diff ${before} ${now} -- ${CHANGED_FILE}"
+echo "git diff -r ${before}..${now} -- ${CHANGED_FILE}"
 git diff ${before} ${now} -- ${CHANGED_FILE} > ${CHANGED_FILE}.diff
 
 ### Reporting ###
