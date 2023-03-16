@@ -60,5 +60,6 @@ if [ $? -ne 0 ]; then
 fi
 
 generate_report ${report}
+generate_diff ${CHANGED_FILE}.diff
 
 echo "::endgroup::"
