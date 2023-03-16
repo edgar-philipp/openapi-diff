@@ -3,6 +3,7 @@
 if [ "$GITHUB_EVENT_NAME" = "pull_request" ]; then
   before="${GITHUB_BASE_REF}"
   now="${GITHUB_HEAD_REF}"
+  git checkout "${before}"
   git checkout "${now}"
 elif [ "$GITHUB_EVENT_NAME" = "push" ]; then 
   before="${PREVIOUS_HASH}"
