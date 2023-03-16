@@ -7,8 +7,10 @@ open-source OpenAPI diff tool paired with GitHub actions.
 
 You can integrate this workflow into your project, by adding following snippet into your GitHub action workflow under `.github/workflows`:
 
+### On every push to main branch
+
 ```yml
-name: Reuse Workflow Diff-Detection
+name: on Push to Main Diff-Detection
 
 on:
   label:
@@ -16,8 +18,6 @@ on:
   push:
     branches: [main]
     paths: ['openapi/**/*.yml', 'openapi/**/*.yaml']
-  pull_request:
-    branches: [main]  
 
 jobs:
   openapi-diff:
@@ -27,6 +27,22 @@ jobs:
       rule-overwrites: '{ "info-license": "off", "license-url": "off" }'
 ```
 
+### On Pull Request to main branch
+
+```yml
+name: on Pull Request Diff-Detection
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  openapi-diff:
+    uses: edgar-philipp/openapi-diff/.github/workflows/openapi-diff.yml@main
+    with:
+      path-filters: 'openapi/**/*.yml openapi/**/*.yaml'
+      rule-overwrites: '{ "info-license": "off", "license-url": "off" }'
+```
 
 ## Changing OpenAPI Files ..
 
