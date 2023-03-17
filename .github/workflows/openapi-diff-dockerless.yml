@@ -37,7 +37,10 @@ env:
   # The head_ref or source branch of the pull request in a workflow run. 
   # This property is only available when the event that triggers a workflow run is a pull_request.
   GITHUB_HEAD_REF: ${{ github.head_ref }}
-  
+
+permissions:
+  checks: write
+
 jobs:
     
   changed-files:
