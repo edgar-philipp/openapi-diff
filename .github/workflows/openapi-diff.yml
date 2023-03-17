@@ -11,6 +11,11 @@ on:
         description: 'JSON structure for rule overwrites, where the OAS rule names (see https://github.com/stoplightio/spectral/blob/develop/docs/reference/openapi-rules.md) are keys, and severity (see https://github.com/stoplightio/spectral/blob/develop/docs/guides/4a-rules.md#severity) are values, e.g. { "info-license": "info", "license-url": "off" }'
         type: string
         default: '{}'
+      linter-only:
+        description: 'Flag to control whether only the linter is run, without the OpenAPI diff. Optional, defaults to false'
+        type: boolean
+        required: false
+        default: false
 
 env:
   GITHUB_SERVER_URL: ${{ github.server_url }}
@@ -164,7 +169,7 @@ jobs:
         
       - name: Verify Diffs on OpenAPI File
         id: diff-file
-        if: ${{ success() || failure() }}
+        if: ${{ inputs.linter-only = true && (success() || failure()) }}
         run: ${GITHUB_WORKSPACE}/workflow-repo/scripts/openapi_diff.sh
         shell: bash
         env:
