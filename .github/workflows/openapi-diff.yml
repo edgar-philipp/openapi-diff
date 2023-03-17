@@ -169,7 +169,7 @@ jobs:
         
       - name: Verify Diffs on OpenAPI File
         id: diff-file
-        if: ${{ inputs.linter-only = true && (success() || failure()) }}
+        if: ${{ inputs.linter-only == true && (success() || failure()) }}
         run: ${GITHUB_WORKSPACE}/workflow-repo/scripts/openapi_diff.sh
         shell: bash
         env:
