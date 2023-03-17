@@ -17,6 +17,9 @@ on:
         required: false
         default: false
 
+permissions:
+  checks: write
+
 env:
   GITHUB_SERVER_URL: ${{ github.server_url }}
   GITHUB_REPOSITORY: ${{ github.repository }}
