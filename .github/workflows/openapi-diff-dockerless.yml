@@ -1,0 +1,160 @@
+name: OpenAPI-Diff (Dockerless)
+
+on:
+  workflow_call:
+    inputs:
+      path-filters:
+        description: 'Space-separated list of path filter expressions, e.g. \"openapi/**/*.yaml openapi/**/*.yml\"'
+        type: string
+        required: true
+      rule-overwrites:
+        description: 'JSON structure for rule overwrites, where the OAS rule names (see https://github.com/stoplightio/spectral/blob/develop/docs/reference/openapi-rules.md) are keys, and severity (see https://github.com/stoplightio/spectral/blob/develop/docs/guides/4a-rules.md#severity) are values, e.g. { "info-license": "info", "license-url": "off" }'
+        type: string
+        default: '{}'
+      linter-only:
+        description: 'Flag to control whether only the linter is run, without the OpenAPI diff. Optional, defaults to false'
+        type: boolean
+        required: false
+        default: false
+
+env:
+  GITHUB_SERVER_URL: ${{ github.server_url }}
+  GITHUB_REPOSITORY: ${{ github.repository }}
+  GITHUB_REF: ${{ github.ref }}
+  GITHUB_SHA: ${{ github.sha }}
+  GITHUB_WORKSPACE: ${{ github.workspace }}
+  
+  # The event that triggered the GitHub action, e.g. push or pull_request.
+  GITHUB_EVENT_NAME: ${{ github.event_name }}
+  
+  CURRENT_HASH: ${{ github.event.after }}
+  PREVIOUS_HASH: ${{ github.event.before }}
+  
+  # The base_ref or target branch of the pull request in a workflow run. 
+  # This property is only available when the event that triggers a workflow run is a pull_request.
+  GITHUB_BASE_REF: ${{ github.base_ref }}
+  
+  # The head_ref or source branch of the pull request in a workflow run. 
+  # This property is only available when the event that triggers a workflow run is a pull_request.
+  GITHUB_HEAD_REF: ${{ github.head_ref }}
+  
+jobs:
+    
+  changed-files:
+    name: Detect changed OpenAPI files
+    runs-on: ubuntu-latest
+    outputs:
+      matrix-added-files: ${{ steps.added-files-to-matrix.outputs.matrix }}
+      matrix-changed-files: ${{ steps.changed-files-to-matrix.outputs.matrix }}
+    steps:
+      - name: Checkout Git Repository
+        uses: actions/checkout@v3
+        with:
+          # all history for all branches and tags
+          fetch-depth: 0
+      - name: Checkout Reusable Workflow for Scripts
+        uses: actions/checkout@v3
+        with:
+          repository: edgar-philipp/openapi-diff
+          path: workflow-repo
+
+      - name: Identify Added OpenAPI files
+        id: list-added-files
+        run: ${GITHUB_WORKSPACE}/workflow-repo/scripts/list_changed_files.sh
+        shell: bash
+        env:
+          PATH_FILTERS: ${{ inputs.path-filters }}
+          OPERATION: 'Added'
+
+      - name: Identify Changed OpenAPI files
+        id: list-changed-files
+        run: ${GITHUB_WORKSPACE}/workflow-repo/scripts/list_changed_files.sh
+        shell: bash
+        env:
+          PATH_FILTERS: ${{ inputs.path-filters }}
+          OPERATION: 'Changed'
+      
+      - name: Transform added files into GitHub matrix (special JSON format)
+        id: added-files-to-matrix
+        run: ${GITHUB_WORKSPACE}/workflow-repo/scripts/transform_to_github_matrix.sh
+        shell: bash
+        env:
+          CHANGED_FILES: ${{ steps.list-added-files.outputs.changed_files }}
+      
+      - name: Transform changed files into GitHub matrix (special JSON format)
+        id: changed-files-to-matrix
+        run: ${GITHUB_WORKSPACE}/workflow-repo/scripts/transform_to_github_matrix.sh
+        shell: bash
+        env:
+          CHANGED_FILES: ${{ steps.list-changed-files.outputs.changed_files }}
+  
+  openapi-linter:
+    name: Lint new OpenAPI files
+    needs: changed-files
+    if: ${{ toJson(fromJson(needs.changed-files.outputs.matrix-added-files)) != '{}' }}
+    runs-on: ubuntu-latest
+      # Matrix will spawn a separate job instance for every added file
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.changed-files.outputs.matrix-added-files) }}
+    steps:
+      - name: Checkout Git Repository
+        uses: actions/checkout@v3
+      - name: Checkout Reusable Workflow for Scripts
+        uses: actions/checkout@v3
+        with:
+          repository: edgar-philipp/openapi-diff
+          path: workflow-repo
+
+      - name: Add custom Spectral rules
+        id: custom-spectral-rules
+        run: ${GITHUB_WORKSPACE}/workflow-repo/scripts/lint_rules.sh
+        shell: bash
+        env:
+          JSON_INPUT: ${{ toJson(fromJson(inputs.rule-overwrites)) }}
+      - name: Run Spectral Linter
+        uses: stoplightio/spectral-action@latest
+        with:
+          file_glob: ${{ matrix.file }}
+          spectral_ruleset: workflow-repo/linter/spectral.yml
+        
+  diff-detection:
+    name: Diff on OpenAPI file
+    needs: changed-files
+    if: ${{ toJson(fromJson(needs.changed-files.outputs.matrix-changed-files)) != '{}' }}
+    runs-on: ubuntu-latest
+      # Matrix will spawn a separate job instance for every changed file
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.changed-files.outputs.matrix-changed-files) }}
+    steps:
+      - name: Checkout Git Repository
+        uses: actions/checkout@v3
+        with:
+          # all history for all branches and tags
+          fetch-depth: 0
+      - name: Checkout Reusable Workflow for Scripts
+        uses: actions/checkout@v3
+        with:
+          repository: edgar-philipp/openapi-diff
+          path: workflow-repo
+
+      - name: Add custom Spectral rules
+        id: custom-spectral-rules
+        run: ${GITHUB_WORKSPACE}/workflow-repo/scripts/lint_rules.sh
+        shell: bash
+        env:
+          JSON_INPUT: ${{ toJson(fromJson(inputs.rule-overwrites)) }}
+      - name: Run Spectral Linter
+        uses: stoplightio/spectral-action@latest
+        with:
+          file_glob: ${{ matrix.file }}
+          spectral_ruleset: workflow-repo/linter/spectral.yml
+          
+      - name: Verify Diffs on OpenAPI File
+        id: diff-file
+        if: ${{ inputs.linter-only == false && (success() || failure()) }}
+        run: ${GITHUB_WORKSPACE}/workflow-repo/scripts/openapi_diff.sh
+        shell: bash
+        env:
+          CHANGED_FILE: ${{ matrix.file }}
