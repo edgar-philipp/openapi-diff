@@ -2,11 +2,13 @@
 
 echo "::group::Init Linter"
 
-cd ..
+workflow_dir=${GITHUB_WORKSPACE}/workflow-repo
+
+cd "$workflow_dir"
 echo "Building Spectral"
 npm install .
 
 echo "Checking Spectral installation"
-./node_modules/".bin"/spectral --version
+"$workflow_dir"/node_modules/".bin"/spectral --version
 
 echo "::endgroup::"
