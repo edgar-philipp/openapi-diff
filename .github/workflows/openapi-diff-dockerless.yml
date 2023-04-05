@@ -115,11 +115,14 @@ jobs:
         shell: bash
         env:
           JSON_INPUT: ${{ toJson(fromJson(inputs.rule-overwrites)) }}
+      - name: Install Spectral Linter
+        id: install-linter
+        run: ${GITHUB_WORKSPACE}/workflow-repo/scripts/lint_checkout_dockerless.sh
+        shell: bash
       - name: Run Spectral Linter
-        uses: stoplightio/spectral-action@latest
-        with:
-          file_glob: ${{ matrix.file }}
-          spectral_ruleset: workflow-repo/linter/spectral.yml
+        id: run-linter
+        run: ${GITHUB_WORKSPACE}/workflow-repo/node_modules/".bin"/spectral lint ${{ matrix.file }} -r workflow-repo/linter/spectral.yml -o linter.out 2>linter.out
+        shell: bash
         
   diff-detection:
     name: Diff on OpenAPI file
@@ -148,12 +151,15 @@ jobs:
         shell: bash
         env:
           JSON_INPUT: ${{ toJson(fromJson(inputs.rule-overwrites)) }}
+      - name: Install Spectral Linter
+        id: install-linter
+        run: ${GITHUB_WORKSPACE}/workflow-repo/scripts/lint_checkout_dockerless.sh
+        shell: bash
       - name: Run Spectral Linter
-        uses: stoplightio/spectral-action@latest
-        with:
-          file_glob: ${{ matrix.file }}
-          spectral_ruleset: workflow-repo/linter/spectral.yml
-          
+        id: run-linter
+        run: ${GITHUB_WORKSPACE}/workflow-repo/node_modules/".bin"/spectral lint ${{ matrix.file }} -r workflow-repo/linter/spectral.yml -o linter.out 2>linter.out
+        shell: bash
+           
       - name: Verify Diffs on OpenAPI File
         id: diff-file
         if: ${{ inputs.linter-only == false && (success() || failure()) }}
