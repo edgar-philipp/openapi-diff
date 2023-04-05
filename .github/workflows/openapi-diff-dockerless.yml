@@ -124,6 +124,13 @@ jobs:
         id: run-linter
         run: ${GITHUB_WORKSPACE}/workflow-repo/node_modules/".bin"/spectral lint ${{ matrix.file }} -r workflow-repo/linter/spectral.yml -o linter.out 2>linter.out
         shell: bash
+      - name: Linter Report
+        id: linter-report
+        if: ${{ success() || failure() }}
+        run: ${GITHUB_WORKSPACE}/workflow-repo/scripts/lint_report.sh
+        shell: bash
+        env:
+          LINT_RESULT: linter.out  
         
   diff-detection:
     name: Diff on OpenAPI file
@@ -161,6 +168,13 @@ jobs:
         id: run-linter
         run: ${GITHUB_WORKSPACE}/workflow-repo/node_modules/".bin"/spectral lint ${{ matrix.file }} -r workflow-repo/linter/spectral.yml -o linter.out 2>linter.out
         shell: bash
+      - name: Linter Report
+        id: linter-report
+        if: ${{ success() || failure() }}
+        run: ${GITHUB_WORKSPACE}/workflow-repo/scripts/lint_report.sh
+        shell: bash
+        env:
+          LINT_RESULT: linter.out  
            
       - name: Verify Diffs on OpenAPI File
         id: diff-file
