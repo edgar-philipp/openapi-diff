@@ -115,6 +115,7 @@ jobs:
         shell: bash
         env:
           JSON_INPUT: ${{ toJson(fromJson(inputs.rule-overwrites)) }}
+          
       - name: Install Spectral Linter
         id: install-linter
         run: ${GITHUB_WORKSPACE}/workflow-repo/scripts/lint_checkout_dockerless.sh
@@ -151,6 +152,7 @@ jobs:
         shell: bash
         env:
           JSON_INPUT: ${{ toJson(fromJson(inputs.rule-overwrites)) }}
+          
       - name: Install Spectral Linter
         id: install-linter
         run: ${GITHUB_WORKSPACE}/workflow-repo/scripts/lint_checkout_dockerless.sh
