@@ -1,0 +1,13 @@
+{
+  "name": "checkout-spectral-cli",
+  "version": "1.0",
+  "description": "Checks out Spectral CLI in a defined version",
+  "author": {
+    "name": "Edgar-Philipp Stoffel",
+    "email": "edgar.philipp@gmail.com",
+    "url": "https://github.com/edgar-philipp/"
+  },
+  "dependencies": {
+    "@stoplight/spectral-cli": "^6.6.0"
+  }
+}
